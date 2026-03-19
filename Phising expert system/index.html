@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Detection Expert System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-shell">
+        <main class="app-card">
+            <section class="hero">
+                <span class="eyebrow">Cybersecurity Rule Engine</span>
+                <h1>Phishing Detection Expert System</h1>
+                <p>
+                    Answer a few questions about the email and let the expert system
+                    evaluate whether it appears safe, suspicious, or phishing-related.
+                </p>
+            </section>
+
+            <section class="form-panel">
+                <form id="analysisForm" action="process.php" method="post" novalidate>
+                    <div class="questions-grid">
+                        <fieldset class="question-card">
+                            <legend>Is the sender known?</legend>
+                            <label class="choice-pill">
+                                <input type="radio" name="sender_known" value="yes" required>
+                                <span>Yes</span>
+                            </label>
+                            <label class="choice-pill">
+                                <input type="radio" name="sender_known" value="no" required>
+                                <span>No</span>
+                            </label>
+                        </fieldset>
+
+                        <fieldset class="question-card">
+                            <legend>Does the email contain a suspicious link?</legend>
+                            <label class="choice-pill">
+                                <input type="radio" name="suspicious_link" value="yes" required>
+                                <span>Yes</span>
+                            </label>
+                            <label class="choice-pill">
+                                <input type="radio" name="suspicious_link" value="no" required>
+                                <span>No</span>
+                            </label>
+                        </fieldset>
+
+                        <fieldset class="question-card">
+                            <legend>Does the email request sensitive information?</legend>
+                            <label class="choice-pill">
+                                <input type="radio" name="sensitive_request" value="yes" required>
+                                <span>Yes</span>
+                            </label>
+                            <label class="choice-pill">
+                                <input type="radio" name="sensitive_request" value="no" required>
+                                <span>No</span>
+                            </label>
+                        </fieldset>
+
+                        <fieldset class="question-card">
+                            <legend>Does the email use urgent or threatening language?</legend>
+                            <label class="choice-pill">
+                                <input type="radio" name="urgent_language" value="yes" required>
+                                <span>Yes</span>
+                            </label>
+                            <label class="choice-pill">
+                                <input type="radio" name="urgent_language" value="no" required>
+                                <span>No</span>
+                            </label>
+                        </fieldset>
+
+                        <fieldset class="question-card">
+                            <legend>Does the email contain suspicious attachments?</legend>
+                            <label class="choice-pill">
+                                <input type="radio" name="suspicious_attachment" value="yes" required>
+                                <span>Yes</span>
+                            </label>
+                            <label class="choice-pill">
+                                <input type="radio" name="suspicious_attachment" value="no" required>
+                                <span>No</span>
+                            </label>
+                        </fieldset>
+                    </div>
+
+                    <p id="formError" class="form-error" aria-live="polite"></p>
+
+                    <div class="action-row">
+                        <button type="submit" class="primary-button">Analyze Email</button>
+                        <button type="reset" class="secondary-button">Reset</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+        <div class="loading-card" role="status" aria-live="polite">
+            <div class="spinner"></div>
+            <p>Analyzing email indicators...</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById("analysisForm");
+        const errorMessage = document.getElementById("formError");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+
+        function groupHasSelection(groupName) {
+            return Boolean(form.querySelector(`input[name="${groupName}"]:checked`));
+        }
+
+        function validateForm() {
+            const requiredGroups = [
+                "sender_known",
+                "suspicious_link",
+                "sensitive_request",
+                "urgent_language",
+                "suspicious_attachment"
+            ];
+
+            const missingResponse = requiredGroups.some((group) => !groupHasSelection(group));
+
+            if (missingResponse) {
+                errorMessage.textContent = "Please answer every question before analyzing the email.";
+                return false;
+            }
+
+            errorMessage.textContent = "";
+            return true;
+        }
+
+        form.addEventListener("submit", (event) => {
+            if (!validateForm()) {
+                event.preventDefault();
+                return;
+            }
+
+            loadingOverlay.classList.add("is-visible");
+            loadingOverlay.setAttribute("aria-hidden", "false");
+        });
+
+        form.addEventListener("reset", () => {
+            errorMessage.textContent = "";
+            loadingOverlay.classList.remove("is-visible");
+            loadingOverlay.setAttribute("aria-hidden", "true");
+        });
+    </script>
+</body>
+</html>
