@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Sitemap: https://www.simurangers.co.ke/sitemap.xml
