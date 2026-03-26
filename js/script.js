@@ -6,6 +6,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
+    const sendEmailBtn = document.getElementById('sendEmailBtn');
+    const sendEmailModalBtn = document.getElementById('sendEmailModalBtn');
 
     if (hamburger) {
         hamburger.addEventListener('click', function() {
@@ -44,6 +46,12 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.classList.add('active');
         });
     }
+
+    [sendEmailBtn, sendEmailModalBtn].forEach(button => {
+        if (button) {
+            button.addEventListener('click', handleEmailRequest);
+        }
+    });
 
     // Close modal on close button click
     if (modalClose) {
@@ -141,6 +149,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+const emailRequest = {
+    recipient: 'simurangers@gmail.com',
+    subject: 'Service Request',
+    body: 'Hello,\n\nI would like to request your services.\n\nThanks.'
+};
+
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+function buildMailtoUrl() {
+    return `mailto:${emailRequest.recipient}?subject=${encodeURIComponent(emailRequest.subject)}&body=${encodeURIComponent(emailRequest.body)}`;
+}
+
+function buildGmailComposeUrl() {
+    return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailRequest.recipient)}&su=${encodeURIComponent(emailRequest.subject)}&body=${encodeURIComponent(emailRequest.body)}`;
+}
+
+function handleEmailRequest(event) {
+    if (isMobileDevice()) {
+        event.preventDefault();
+        window.location.href = buildMailtoUrl();
+    }
+}
 
 // Notification Function
 function showNotification(message, type = 'info') {
@@ -315,7 +348,11 @@ function goToForm() {
     const modal = document.getElementById('serviceModal');
     if (modal) modal.classList.remove('active');
 
-    // Open the device's default mail app with the email prefilled
-    const mailtoUrl = 'mailto:simurangers@gmail.com?subject=Service%20Request&body=Hello%2C%0A%0AI%20would%20like%20to%20request%20your%20services.%0A';
-    window.location.href = mailtoUrl;
+    if (isMobileDevice()) {
+        window.location.href = buildMailtoUrl();
+        return;
+    }
+
+    const gmailUrl = buildGmailComposeUrl();
+    window.open(gmailUrl, '_blank', 'noopener');
 }
